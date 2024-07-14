@@ -24,6 +24,7 @@ public:
     void Update();
     void Render();
     void Shutdown();
+    void AddImGui();
 
 private:
     SDLImgui() = default;

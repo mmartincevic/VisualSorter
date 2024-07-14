@@ -33,5 +33,6 @@ private:
     bool swapped;
     int i;
     int j;
+    bool isOpen = false;
     std::vector<int> randomVector;
 };

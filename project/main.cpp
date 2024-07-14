@@ -12,8 +12,6 @@
 
 #include <iostream>
 #include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 
 #undef main
 #include "Sources/definitions.h"
@@ -47,7 +45,6 @@ int main(int argc, const char* args[])
             lastUpdateTime = currentTime;
         }*/
         game->Update(SDL_GetTicks64());
-
         game->Draw(SDL_GetTicks64());
     }
 

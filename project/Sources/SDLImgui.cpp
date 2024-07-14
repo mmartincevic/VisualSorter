@@ -9,7 +9,7 @@
 #include "../../vendors/imgui/imgui.h"
 #include "../../vendors/imgui/backends/imgui_impl_sdl2.h"
 #include "../../vendors/imgui/backends/imgui_impl_sdlrenderer2.h"
-
+#include <iostream>
 
 SDLImgui& SDLImgui::Instance()
 {
@@ -43,8 +43,9 @@ void SDLImgui::Initialize(SDL_Window* window, SDL_Renderer* renderer)
 
     ImGui::StyleColorsDark();
 
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer2_Init(renderer);
+    //// Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForSDLRenderer(m_window, m_renderer);
+    ImGui_ImplSDLRenderer2_Init(m_renderer);
 
     m_initialized = true;
 }
@@ -53,10 +54,6 @@ void SDLImgui::Update()
 {
     if (!m_initialized)
         return;
-
-    ImGui_ImplSDLRenderer2_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
 }
 
 void SDLImgui::Render()
@@ -67,10 +64,16 @@ void SDLImgui::Render()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(SCREEN_HEIGHT, 30), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH, 30), ImGuiCond_Always);
 
     ImGui::Begin("ImGUI Debugger", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
+
+    //AddImGui();
 
     if (ImGui::BeginMenuBar())
     {
@@ -113,4 +116,27 @@ void SDLImgui::Shutdown()
     ImGui::DestroyContext();
 
     m_initialized = false;
+}
+
+void SDLImgui::AddImGui()
+{
+    bool open = true;
+    ImGui::SeparatorText("Game settings");
+    ImGui::Begin("Game stuff", &open);
+    ImGui::Text("Frames passed: %d", 100);
+
+    std::string game_state = "RUNNING";
+    ImGui::Text("Game state: %s", game_state.c_str());
+
+    ImGui::SeparatorText("Cheats:");
+    if (ImGui::Button("Freeze game"))
+    {
+
+    }
+
+    if (ImGui::Button("Next Frame"))
+    {
+    }
+
+    ImGui::End();
 }

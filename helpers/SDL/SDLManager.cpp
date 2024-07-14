@@ -2,6 +2,10 @@
 #include <iostream>
 #include <SDL_image.h>
 
+#include "../../vendors/imgui/imgui.h"
+#include "../../vendors/imgui/backends/imgui_impl_sdl2.h"
+#include "../../vendors/imgui/backends/imgui_impl_sdlrenderer2.h"
+
 SDLManager& SDLManager::Instance()
 {
     static SDLManager instance;
@@ -19,23 +23,24 @@ bool SDLManager::Init(const std::string& title, int width, int height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
     }
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
-    m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+    Uint32 window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS;
+    m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, window_flags);
 
     if (!m_window)
     {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
     }
 
     m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (!m_renderer)
     {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
     }
 
