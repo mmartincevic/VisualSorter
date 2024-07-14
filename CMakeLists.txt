@@ -29,6 +29,23 @@ set(SDL2_TTF_LIBRARIES "${SDL2_TTF_LIBRARY_DIR}/SDL2_ttf.lib")
 # Add ImGui
 set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/vendors/imgui")
 
+# Create ImGui library
+add_library(imgui STATIC
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+)
+
+target_include_directories(imgui PUBLIC
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+    ${SDL2_INCLUDE_DIRS}
+)
+
 # Helper function to add a library or executable
 function(add_project_target TARGET_NAME SOURCE_DIR TYPE USE_FILTERS)
     # Find all source files including those in subdirectories
@@ -64,12 +81,13 @@ function(add_project_target TARGET_NAME SOURCE_DIR TYPE USE_FILTERS)
         ${SDL2_IMG_INCLUDE_DIRS}
         ${SDL2_TTF_INCLUDE_DIRS}
         ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
     )
     
     if(${TYPE} STREQUAL "EXECUTABLE")
-        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES} imgui)
     else()
-        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARY_DIR}/SDL2.lib ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARY_DIR}/SDL2.lib ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES} imgui)
     endif()
 endfunction()
 

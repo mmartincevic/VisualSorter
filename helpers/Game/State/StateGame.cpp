@@ -2,6 +2,7 @@
 #include "../../../helpers/SDL/SDLManager.h"
 #include "../../../project/Sources/definitions.h"
 #include "../../../project/Sources/functions.h"
+#include "../../../project/Sources/SDLImgui.h"
 #include <iostream>
 
 void StateGame::Enter(StateManager* manager)
@@ -15,6 +16,8 @@ void StateGame::Enter(StateManager* manager)
     swapped = false;
     i = 0;
     j = 0;
+
+    //SDLImgui::Instance().Initialize(SDLManager::Instance().Window(), SDLManager::Instance().Renderer());
 }
 
 void bubbleSortStep(std::vector<int>& arr, int& i, int& j, bool& swapped)
@@ -47,12 +50,14 @@ void bubbleSortStep(std::vector<int>& arr, int& i, int& j, bool& swapped)
 
 void StateGame::Update(StateManager* manager)
 {
+    //SDLImgui::Instance().Update();
     bubbleSortStep(randomVector, i, j, swapped);
-
 }
 
 void StateGame::Draw(StateManager* manager)
 {
+    //SDLImgui::Instance().Render();
+
     SDL_Color color;
     color = { 125, 0, 255, 255 };
     for (int i = 0; i < randomVector.size(); i++)
