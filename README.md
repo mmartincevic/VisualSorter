@@ -4,5 +4,5 @@
 
 ### Bubble sort
 
-![alt text](https://github.com/mmartincevic/VisualSorter/resources/bubblesort.gif?raw=true)
+![alt text](https://github.com/mmartincevic/VisualSorter/blob/main/resources/bubblesort.gif?raw=true)
 
