@@ -118,6 +118,7 @@ void SDLImgui::Shutdown()
     m_initialized = false;
 }
 
+
 void SDLImgui::AddImGui()
 {
     bool open = true;
@@ -134,9 +135,6 @@ void SDLImgui::AddImGui()
 
     }
 
-    if (ImGui::Button("Next Frame"))
-    {
-    }
 
     ImGui::End();
 }

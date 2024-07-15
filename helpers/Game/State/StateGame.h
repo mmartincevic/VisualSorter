@@ -26,6 +26,8 @@ public:
 
 public:
     void DrawSomething();
+    inline int getAlgorithmSelected() const { return currentAlgorithm; }
+    void setAlgorithmSelected(int algo) { currentAlgorithm = algo; }
 
 private:
     int vectorSize;
@@ -35,4 +37,5 @@ private:
     int j;
     bool isOpen = false;
     std::vector<int> randomVector;
+    int currentAlgorithm = 0;
 };

@@ -21,6 +21,7 @@ void StateGame::Enter(StateManager* manager)
 
     auto mwin = SDLManager::Instance().Window();
    SDLImgui::Instance().Initialize(SDLManager::Instance().Window(), SDLManager::Instance().Renderer());
+   SDLImgui::Instance().AddImguiWindow(std::make_shared<GameImGui>(*this));
 }
 
 void bubbleSortStep(std::vector<int>& arr, int& i, int& j, bool& swapped)
@@ -54,8 +55,16 @@ void bubbleSortStep(std::vector<int>& arr, int& i, int& j, bool& swapped)
 void StateGame::Update(StateManager* manager)
 {
     SDLImgui::Instance().Update();
-    SDLImgui::Instance().AddImguiWindow(std::make_shared<GameImGui>());
-    bubbleSortStep(randomVector, i, j, swapped);
+
+    switch (currentAlgorithm)
+    {
+
+    default:
+        bubbleSortStep(randomVector, i, j, swapped);
+        break;
+    }
+
+    std::cout << "Selected : " << currentAlgorithm << std::endl;
 }
 
 void StateGame::Draw(StateManager* manager)

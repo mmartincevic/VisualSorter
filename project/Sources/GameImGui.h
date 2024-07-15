@@ -2,11 +2,17 @@
 
 #include "SDLImgui.h"
 #include "../../vendors/imgui/imgui.h"
+#include "../../helpers/Game/State/StateGame.h"
+
+const char* algorithms[] = { "BubbleSort", "BubbleSort 2", "BubbleSort 3" };
 
 class GameImGui : public SDLImguiMenuItem
 {
 public:
-    GameImGui() {}
+    GameImGui(StateGame& gameState) : m_gameState(gameState)
+    {
+        selected_algo = m_gameState.getAlgorithmSelected();
+    }
 
     const char* GetName() const override
     {
@@ -16,24 +22,34 @@ public:
     virtual void RenderWindow() override
     {
 
-        ImGui::SeparatorText("Game settings");
+        ImGui::SeparatorText("Algorithms");
         ImGui::Begin("Game stuff", &isOpen);
-        ImGui::Text("Frames passed: %d", 120);
 
-        std::string game_state = "FREEZE";
-        ImGui::Text("Game state: %s", game_state.c_str());
-
-        ImGui::SeparatorText("Cheats:");
-        if (ImGui::Button("Freeze game"))
+        if (ImGui::BeginCombo("Select an algorithm", algorithms[selected_algo]))
         {
-            //m_Game->TogglePause();
+            for (int n = 0; n < IM_ARRAYSIZE(algorithms); n++)
+            {
+                bool is_selected = (selected_algo == n);
+                if (ImGui::Selectable(algorithms[n], is_selected))
+                {
+                    selected_algo = n;
+                }
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
         }
 
-        if (ImGui::Button("Next Frame"))
+        if (ImGui::Button("Go!"))
         {
-            //m_Game->NextFrame();
+            m_gameState.setAlgorithmSelected(selected_algo);
         }
 
         ImGui::End();
     }
+private:
+    StateGame& m_gameState;
+    int selected_algo;
 };
