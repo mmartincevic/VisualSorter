@@ -13,6 +13,7 @@
 
 #include "GameState.h"
 #include "StateManager.h"
+#include "../../../project/Sources/definitions.h"
 #include "../../Input/SimpleInputManager.h"
 
 class StateGame : public IGameState
@@ -30,12 +31,11 @@ public:
     void setAlgorithmSelected(int algo) { currentAlgorithm = algo; }
 
 private:
-    int vectorSize;
-    int steps;
-    bool swapped;
-    int i;
-    int j;
+    void resetVector();
+
+private:
     bool isOpen = false;
     std::vector<int> randomVector;
     int currentAlgorithm = 0;
+    int runningAlgorithm = 0;
 };

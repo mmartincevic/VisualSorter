@@ -4,7 +4,7 @@
 #include "../../vendors/imgui/imgui.h"
 #include "../../helpers/Game/State/StateGame.h"
 
-const char* algorithms[] = { "BubbleSort", "BubbleSort 2", "BubbleSort 3" };
+const char* algorithms[] = { "BubbleSort", "CycleSort"};
 
 class GameImGui : public SDLImguiMenuItem
 {

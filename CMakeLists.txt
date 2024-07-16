@@ -26,28 +26,12 @@ set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_DIR}/include")
 set(SDL2_TTF_LIBRARY_DIR "${SDL2_TTF_DIR}/lib/x64")
 set(SDL2_TTF_LIBRARIES "${SDL2_TTF_LIBRARY_DIR}/SDL2_ttf.lib")
 
-# Add ImGui
+# Define ImGui paths
 set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/vendors/imgui")
-
-# Create ImGui library
-add_library(imgui STATIC
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_demo.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer2.cpp
-)
-
-target_include_directories(imgui PUBLIC
-    ${IMGUI_DIR}
-    ${IMGUI_DIR}/backends
-    ${SDL2_INCLUDE_DIRS}
-)
+set(IMGUI_INCLUDE_DIRS "${IMGUI_DIR}" "${IMGUI_DIR}/backends")
 
 # Helper function to add a library or executable
-function(add_project_target TARGET_NAME SOURCE_DIR TYPE USE_FILTERS)
+function(add_project_target TARGET_NAME SOURCE_DIR TYPE)
     # Find all source files including those in subdirectories
     file(GLOB_RECURSE SOURCE_FILES
         "${SOURCE_DIR}/*.cpp"
@@ -61,18 +45,13 @@ function(add_project_target TARGET_NAME SOURCE_DIR TYPE USE_FILTERS)
         add_library(${TARGET_NAME} ${SOURCE_FILES})
     endif()
     
-    if(${USE_FILTERS})
-        # Create source groups (filters in Visual Studio)
-        foreach(SOURCE_FILE IN ITEMS ${SOURCE_FILES})
-            get_filename_component(SOURCE_PATH "${SOURCE_FILE}" PATH)
-            file(RELATIVE_PATH SOURCE_PATH_REL "${SOURCE_DIR}" "${SOURCE_PATH}")
-            string(REPLACE "/" "\\" SOURCE_PATH_MSVC "${SOURCE_PATH_REL}")
-            source_group("${SOURCE_PATH_MSVC}" FILES "${SOURCE_FILE}")
-        endforeach()
-    else()
-        # Set the VS_SCC_PROJECTNAME property to show folder structure
-        set_property(TARGET ${TARGET_NAME} PROPERTY VS_SCC_PROJECTNAME "${TARGET_NAME}")
-    endif()
+    # Create source groups (filters in Visual Studio)
+    foreach(SOURCE_FILE IN ITEMS ${SOURCE_FILES})
+        get_filename_component(SOURCE_PATH "${SOURCE_FILE}" PATH)
+        file(RELATIVE_PATH SOURCE_PATH_REL "${SOURCE_DIR}" "${SOURCE_PATH}")
+        string(REPLACE "/" "\\" SOURCE_PATH_MSVC "${SOURCE_PATH_REL}")
+        source_group("${SOURCE_PATH_MSVC}" FILES "${SOURCE_FILE}")
+    endforeach()
     
     # Include all directories
     target_include_directories(${TARGET_NAME} PRIVATE
@@ -80,31 +59,41 @@ function(add_project_target TARGET_NAME SOURCE_DIR TYPE USE_FILTERS)
         ${SDL2_INCLUDE_DIRS}
         ${SDL2_IMG_INCLUDE_DIRS}
         ${SDL2_TTF_INCLUDE_DIRS}
-        ${IMGUI_DIR}
-        ${IMGUI_DIR}/backends
+        ${IMGUI_INCLUDE_DIRS}
     )
     
     if(${TYPE} STREQUAL "EXECUTABLE")
-        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES} imgui)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES})
     else()
-        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARY_DIR}/SDL2.lib ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES} imgui)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${SDL2_LIBRARY_DIR}/SDL2.lib ${SDL2_IMG_LIBRARIES} ${SDL2_TTF_LIBRARIES})
     endif()
 endfunction()
 
-# Add the helpers library (with filters)
-add_project_target(helpers_lib ${CMAKE_SOURCE_DIR}/helpers "LIBRARY" TRUE)
+# Add the helpers library
+add_project_target(helpers_lib ${CMAKE_SOURCE_DIR}/helpers "LIBRARY")
 
-# Add the main project (without filters)
-add_project_target(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/project "EXECUTABLE" FALSE)
+# Add the main project
+add_project_target(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/project "EXECUTABLE")
 
 # Link the helpers library to the main project
 target_link_libraries(${PROJECT_NAME} PRIVATE helpers_lib)
 
-# Add the test project (without filters)
-add_project_target(tests ${CMAKE_SOURCE_DIR}/test "EXECUTABLE" FALSE)
+# Add the test project
+add_project_target(tests ${CMAKE_SOURCE_DIR}/test "EXECUTABLE")
 
 # Link the helpers library to the test project
 target_link_libraries(tests PRIVATE helpers_lib)
 
 # Set the startup project to the main project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+# Add ImGui source files directly to the main project
+target_sources(${PROJECT_NAME} PRIVATE
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+)

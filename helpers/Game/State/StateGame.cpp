@@ -1,70 +1,56 @@
 #include "StateGame.h"
+
+#include <iostream>
+
 #include "../../../helpers/SDL/SDLManager.h"
-#include "../../../project/Sources/definitions.h"
 #include "../../../project/Sources/functions.h"
 #include "../../../project/Sources/SDLImgui.h"
 #include "../../vendors/imgui/imgui.h"
 #include "../../project/Sources/GameImGui.h"
-#include <iostream>
+#include "../../project/algos/bubblesort.h"
+#include "../../project/algos/cyclesort.h"
 
 void StateGame::Enter(StateManager* manager)
 {
     std::cout << "State game enter" << '\n';
-    // Entering this gamestate
 
     randomVector = generateRandomVector(1, 800);
-    vectorSize = randomVector.size();
-    steps = 0;
-    swapped = false;
-    i = 0;
-    j = 0;
 
     auto mwin = SDLManager::Instance().Window();
-   SDLImgui::Instance().Initialize(SDLManager::Instance().Window(), SDLManager::Instance().Renderer());
-   SDLImgui::Instance().AddImguiWindow(std::make_shared<GameImGui>(*this));
+    SDLImgui::Instance().Initialize(SDLManager::Instance().Window(), SDLManager::Instance().Renderer());
+    SDLImgui::Instance().AddImguiWindow(std::make_shared<GameImGui>(*this));
 }
 
-void bubbleSortStep(std::vector<int>& arr, int& i, int& j, bool& swapped)
+void StateGame::resetVector()
 {
-    if (i >= arr.size() - 1)
-    {
-        return; // Array is sorted
-    }
-
-    if (j < arr.size() - i - 1)
-    {
-        if (arr[j] > arr[j + 1])
-        {
-            std::swap(arr[j], arr[j + 1]);
-            swapped = true;
-        }
-        j++;
-    }
-    else
-    {
-        j = 0;
-        i++;
-        if (!swapped)
-        {
-            i = arr.size(); // Forces outer loop to end
-        }
-        swapped = false;
-    }
+    randomVector.clear();
+    randomVector = generateRandomVector(1, 800);
 }
 
 void StateGame::Update(StateManager* manager)
 {
     SDLImgui::Instance().Update();
 
-    switch (currentAlgorithm)
+    if (currentAlgorithm != runningAlgorithm)
     {
-
-    default:
-        bubbleSortStep(randomVector, i, j, swapped);
-        break;
+        runningAlgorithm = currentAlgorithm;
+        resetVector();
+        return;
     }
 
-    std::cout << "Selected : " << currentAlgorithm << std::endl;
+    switch (currentAlgorithm)
+    {
+        case 0:
+        
+            bubbleSortStep(randomVector);
+            break;
+        case 1:
+            cycleSortStep(randomVector, 10);
+            break;
+        default:
+            // Handle default case
+            break;
+    }
 }
 
 void StateGame::Draw(StateManager* manager)
@@ -83,6 +69,21 @@ void StateGame::Draw(StateManager* manager)
         int32_t lineDownY = SCREEN_HEIGHT;
 
         DrawLine(linePosTopX, linePosTopY, lineDownX, lineDownY, color);
+    }
+
+    switch (currentAlgorithm)
+    {
+    case 1:
+        color = { 220, 20, 60, 255 };
+        DrawLine(cycleSortParams.pos, 0, cycleSortParams.pos, SCREEN_HEIGHT, color);
+        DrawLine(cycleSortParams.pos+1, 0, cycleSortParams.pos+1, SCREEN_HEIGHT, color);
+
+        color = { 60, 219, 20, 255 };
+        DrawLine(cycleSortParams.i, 0, cycleSortParams.i, SCREEN_HEIGHT, color);
+        DrawLine(cycleSortParams.i+1, 0, cycleSortParams.i+1, SCREEN_HEIGHT, color);
+
+        //DrawLine(cycleSortParams.pos, 0, cycleSortParams.cycle_start, SCREEN_HEIGHT, color);
+        break;
     }
 
     SDLImgui::Instance().Render();
