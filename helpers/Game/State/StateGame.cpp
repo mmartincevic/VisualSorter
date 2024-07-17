@@ -9,6 +9,7 @@
 #include "../../project/Sources/GameImGui.h"
 #include "../../project/algos/bubblesort.h"
 #include "../../project/algos/cyclesort.h"
+#include "../../project/algos/radixsort.h"
 
 void StateGame::Enter(StateManager* manager)
 {
@@ -46,6 +47,9 @@ void StateGame::Update(StateManager* manager)
             break;
         case 1:
             cycleSortStep(randomVector, 10);
+            break;
+        case 2:
+            radixSortStep(randomVector);
             break;
         default:
             // Handle default case
