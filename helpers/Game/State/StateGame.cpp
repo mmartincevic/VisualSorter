@@ -10,12 +10,14 @@
 #include "../../project/algos/bubblesort.h"
 #include "../../project/algos/cyclesort.h"
 #include "../../project/algos/radixsort.h"
+#include "../../project/algos/mergesort.h"
+#include "../../project/algos/msort.h"
 
 void StateGame::Enter(StateManager* manager)
 {
     std::cout << "State game enter" << '\n';
 
-    randomVector = generateRandomVector(1, 800);
+    randomVector = generateRandomVector(1, 1800);
 
     auto mwin = SDLManager::Instance().Window();
     SDLImgui::Instance().Initialize(SDLManager::Instance().Window(), SDLManager::Instance().Renderer());
@@ -36,6 +38,12 @@ void StateGame::Update(StateManager* manager)
     {
         runningAlgorithm = currentAlgorithm;
         resetVector();
+        switch (currentAlgorithm)
+        {
+        case 4:
+            m_sortState = new MySortState(randomVector);
+            break;
+        }
         return;
     }
 
@@ -51,6 +59,18 @@ void StateGame::Update(StateManager* manager)
         case 2:
             radixSortStep(randomVector);
             break;
+        case 3:
+            mergeSortStep(randomVector);
+            break;
+        case 4:
+            {
+                MySortState* state = dynamic_cast<MySortState*>(m_sortState);
+                if (state)
+                {
+                    mergeSortStep2(state);
+                }
+            }
+            break;
         default:
             // Handle default case
             break;
@@ -65,6 +85,30 @@ void StateGame::Draw(StateManager* manager)
     {
         int vector_value = randomVector[i];
         int vector_position = i;
+        int32_t linePosTopX = vector_position;
+        int32_t linePosTopY = SCREEN_HEIGHT - vector_value;
+        int32_t lineDownX = vector_position;
+        int32_t lineDownY = SCREEN_HEIGHT;
+        DrawLine(linePosTopX, linePosTopY, lineDownX, lineDownY, color);
+    }
+
+    /*SDL_Color color;
+    color = { 125, 0, 255, 255 };
+    std::vector<int> toParse;
+
+    if (currentAlgorithm == 3)
+    {
+        toParse = mergeSortParams.temp;
+    } 
+    else
+    {
+        toParse = randomVector;
+    }
+
+    for (int i = 0; i < randomVector.size(); i++)
+    {
+        int vector_value = toParse[i];
+        int vector_position = i;
 
         int32_t linePosTopX = vector_position;
         int32_t linePosTopY = SCREEN_HEIGHT - vector_value;
@@ -73,7 +117,7 @@ void StateGame::Draw(StateManager* manager)
         int32_t lineDownY = SCREEN_HEIGHT;
 
         DrawLine(linePosTopX, linePosTopY, lineDownX, lineDownY, color);
-    }
+    }*/
 
     switch (currentAlgorithm)
     {

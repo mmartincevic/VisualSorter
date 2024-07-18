@@ -15,6 +15,7 @@
 #include "StateManager.h"
 #include "../../../project/Sources/definitions.h"
 #include "../../Input/SimpleInputManager.h"
+#include "../../../project/algos/SortState.h"
 
 class StateGame : public IGameState
 {
@@ -38,4 +39,6 @@ private:
     std::vector<int> randomVector;
     int currentAlgorithm = 0;
     int runningAlgorithm = 0;
+
+    ISortState* m_sortState;
 };
